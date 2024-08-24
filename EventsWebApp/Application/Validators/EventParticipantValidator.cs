@@ -1,7 +1,7 @@
 ﻿using EventsWebApp.Domain.Models;
 using FluentValidation;
 
-namespace EventsWebApp.Application.Common.Validators
+namespace EventsWebApp.Application.Validators
 {
     public class EventParticipantValidator : AbstractValidator<EventParticipant>
     {

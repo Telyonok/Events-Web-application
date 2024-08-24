@@ -13,5 +13,7 @@ public class EventValidator : AbstractValidator<Event>
             @event.Category).MaximumLength(20);
         RuleFor(@event =>
             @event.MaxParticipants).GreaterThan(0);
+        RuleFor(@event =>
+            @event.Location).MaximumLength(30);
     }
 }

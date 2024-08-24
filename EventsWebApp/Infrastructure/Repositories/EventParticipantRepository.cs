@@ -35,6 +35,7 @@ namespace EventsWebApp.Infrastructure.Repositories
                 existingEventParticipant.Firstname = entity.Firstname;
                 existingEventParticipant.Email = entity.Email;
                 existingEventParticipant.Lastname = entity.Lastname;
+                existingEventParticipant.Birthdate = entity.Birthdate;
 
                 return true;
             }

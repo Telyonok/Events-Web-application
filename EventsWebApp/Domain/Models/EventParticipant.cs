@@ -6,6 +6,7 @@ namespace EventsWebApp.Domain.Models
     {
         [Key]
         public Guid Id { get; set; }
+        public Guid? EventId { get; set; }
         [Required]
         public string Firstname { get; set; } = string.Empty;
         [Required]
@@ -13,5 +14,6 @@ namespace EventsWebApp.Domain.Models
         [EmailAddress, Required]
         public string Email { get; set; } = string.Empty;
         public DateTime EventRegistrationDate { get; set; }
+        public DateTime Birthdate { get; set; }
     }
 }

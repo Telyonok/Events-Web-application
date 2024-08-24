@@ -1,4 +1,5 @@
-﻿using EventsWebApp.Domain.Models;
+﻿using EventsWebApp.Application.Filters;
+using EventsWebApp.Domain.Models;
 using EventsWebApp.Domain.Repositories;
 using EventsWebApp.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -37,6 +38,8 @@ namespace EventsWebApp.Infrastructure.Repositories
                 existingEvent.Picture = entity.Picture;
                 existingEvent.Description = entity.Description;
                 existingEvent.Title = entity.Title;
+                existingEvent.Location = entity.Location;
+                existingEvent.EventDateTime = entity.EventDateTime;
 
                 return true;
             }
@@ -65,6 +68,22 @@ namespace EventsWebApp.Infrastructure.Repositories
                 _logger.LogError(ex, "{Repo} Delete function error", typeof(EventRepository));
                 return false;
             }
+        }
+
+        public async Task<IEnumerable<Event>> GetEventsWithFilter(EventFilter filter)
+        {
+            var result = dbSet.AsQueryable();
+
+            if (filter.EventDateTime.HasValue)
+                result = result.Where(e => e.EventDateTime == filter.EventDateTime.Value);
+
+            if (!string.IsNullOrEmpty(filter.Category))
+                result = result.Where(e => e.Category == filter.Category);
+
+            if (!string.IsNullOrEmpty(filter.Location))
+                result = result.Where(e => e.Location == filter.Location);
+
+            return await result.ToListAsync();
         }
     }
 }
