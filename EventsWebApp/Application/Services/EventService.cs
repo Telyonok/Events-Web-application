@@ -3,8 +3,10 @@ using EventsWebApp.Application.DTOs.EventDTOs;
 using EventsWebApp.Application.Exceptions;
 using EventsWebApp.Application.Filters;
 using EventsWebApp.Application.Interfaces;
+using EventsWebApp.Application.Validators;
 using EventsWebApp.Domain.Models;
 using EventsWebApp.Domain.Repositories;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EventsWebApp.Application.Services
@@ -13,11 +15,13 @@ namespace EventsWebApp.Application.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IValidator<Event> _eventValidator;
 
-        public EventService(IUnitOfWork unitOfWork, IMapper mapper)
+        public EventService(IUnitOfWork unitOfWork, IMapper mapper, IValidator<Event> eventValidator)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _eventValidator = eventValidator;
         }
 
         public async Task<IEnumerable<Event>> GetAllEvents()
@@ -47,6 +51,7 @@ namespace EventsWebApp.Application.Services
         public async Task AddEvent([FromBody] CreateEventDTO createEventDTO)
         {
             var @event = _mapper.Map<Event>(createEventDTO);
+            _eventValidator.ValidateAndThrow(@event);
             var result = await _unitOfWork.Events.Add(@event);
             await _unitOfWork.CompleteAsync();
         }
@@ -54,6 +59,7 @@ namespace EventsWebApp.Application.Services
         public async Task UpdateEvent([FromBody] UpdateEventDTO updateEventDTO)
         {
             var @event = _mapper.Map<Event>(updateEventDTO);
+            _eventValidator.ValidateAndThrow(@event);
             var result = await _unitOfWork.Events.Upsert(@event);
             await _unitOfWork.CompleteAsync();
         }

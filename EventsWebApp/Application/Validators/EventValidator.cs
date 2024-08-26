@@ -1,19 +1,23 @@
 ﻿using EventsWebApp.Domain.Models;
 using FluentValidation;
 
-public class EventValidator : AbstractValidator<Event>
+namespace EventsWebApp.Application.Validators
 {
-    public EventValidator()
+    public class EventValidator : AbstractValidator<Event>
     {
-        RuleFor(@event =>
-            @event.Title).NotEmpty().MaximumLength(20);
-        RuleFor(@event =>
-            @event.Description).MaximumLength(300);
-        RuleFor(@event =>
-            @event.Category).MaximumLength(20);
-        RuleFor(@event =>
-            @event.MaxParticipants).GreaterThan(0);
-        RuleFor(@event =>
-            @event.Location).MaximumLength(30);
+        public EventValidator()
+        {
+            RuleFor(@event =>
+                @event.Title).NotEmpty().WithMessage("Title is required.")
+                .MaximumLength(20).WithMessage("Title cannot exceed 20 characters.");
+            RuleFor(@event =>
+                @event.Description).MaximumLength(300).WithMessage("Description cannot exceed 300 characters.");
+            RuleFor(@event =>
+                @event.Category).MaximumLength(20).WithMessage("Category cannot exceed 20 characters.");
+            RuleFor(@event =>
+                @event.MaxParticipants).GreaterThan(0).WithMessage("MaxParticipants cannot be less than 0.");
+            RuleFor(@event =>
+                @event.Location).MaximumLength(30).WithMessage("Location cannot exceed 20 characters.");
+        }
     }
 }

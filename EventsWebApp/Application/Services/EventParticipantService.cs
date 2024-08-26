@@ -5,6 +5,7 @@ using EventsWebApp.Application.Interfaces;
 using EventsWebApp.Domain.Models;
 using EventsWebApp.Domain.Repositories;
 using EventsWebApp.Infrastructure.Repositories;
+using FluentValidation;
 
 namespace EventsWebApp.Application.Services
 {
@@ -12,10 +13,12 @@ namespace EventsWebApp.Application.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public EventParticipantService(IMapper mapper, IUnitOfWork unitOfWork)
+        private readonly IValidator<EventParticipant> _eventParticipantValidator;
+        public EventParticipantService(IMapper mapper, IUnitOfWork unitOfWork, IValidator<EventParticipant> eventParticipant)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _eventParticipantValidator = eventParticipant;
         }
 
         public async Task AddEventParticipant(CreateEventParticipantDTO createEventParticipantDTO)
@@ -28,6 +31,7 @@ namespace EventsWebApp.Application.Services
                 throw new AlreadyExistsException("Event Participant with provided email already exists.");
 
             var eventParticipant = _mapper.Map<EventParticipant>(createEventParticipantDTO);
+            _eventParticipantValidator.ValidateAndThrow(eventParticipant);
             var result = await _unitOfWork.EventParticipants.Add(eventParticipant);
             await _unitOfWork.CompleteAsync();
         }
@@ -96,6 +100,7 @@ namespace EventsWebApp.Application.Services
         public async Task UpdateEventParticipant(UpdateEventParticipantDTO updateEventParticipantDTO)
         {
             var eventParticipant = _mapper.Map<EventParticipant>(updateEventParticipantDTO);
+            _eventParticipantValidator.ValidateAndThrow(eventParticipant);
             var result = await _unitOfWork.EventParticipants.Upsert(eventParticipant);
             await _unitOfWork.CompleteAsync();
         }
