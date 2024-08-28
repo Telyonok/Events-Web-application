@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EventsWebApp.Application.DTOs.EventDTOs;
+using EventsWebApp.Application.Helpers;
 using EventsWebApp.Domain.Models;
 
 namespace EventsWebApp.Application.AutoMapperProfiles
@@ -8,8 +9,8 @@ namespace EventsWebApp.Application.AutoMapperProfiles
     {
         public EventProfile()
         {
-            CreateMap<CreateEventDTO, Event>();
-            CreateMap<UpdateEventDTO, Event>();
+            CreateMap<CreateEventDTO, Event>().ForMember(dest => dest.Picture, opt => opt.MapFrom(src => FileToByteArrayConverter.Convert(src.Picture.FirstOrDefault()).ToString()));
+            CreateMap<UpdateEventDTO, Event>().ForMember(dest => dest.Picture, opt => opt.MapFrom(src => FileToByteArrayConverter.Convert(src.Picture.FirstOrDefault()).ToString()));
         }
     }
 }

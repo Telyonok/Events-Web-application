@@ -1,4 +1,5 @@
-﻿using EventsWebApp.Domain.Models;
+﻿using EventsWebApp.Application.DTOs;
+using EventsWebApp.Domain.Models;
 
 namespace EventsWebApp.Domain.Repositories
 {

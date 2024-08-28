@@ -14,6 +14,6 @@ namespace EventsWebApp.Domain.Models
         public DateTime EventDateTime { get; set; }
         public int MaxParticipants { get; set; }
         public List<EventParticipant> EventParticipants { get; set; } = new List<EventParticipant>();
-        public string Picture { get; set; } = string.Empty; // String for now.
+        public string? Picture { get; set; }
     }
 }

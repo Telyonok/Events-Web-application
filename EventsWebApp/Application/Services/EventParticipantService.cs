@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EventsWebApp.Application.DTOs;
 using EventsWebApp.Application.DTOs.EventParticipantDTOs;
 using EventsWebApp.Application.Exceptions;
 using EventsWebApp.Application.Interfaces;
@@ -60,6 +61,22 @@ namespace EventsWebApp.Application.Services
         {
             var result = await _unitOfWork.EventParticipants.Find(e => e.EventId == eventId);
             return result.FirstOrDefault();
+        }
+
+        public async Task<PagedResult<EventParticipant>> GetAllEventParticipantsPaged(int page, int pageSize)
+        {
+            var totalEventParticipants = await GetAllEventParticipants();
+            var eventParticipants = totalEventParticipants
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize).ToList();
+
+            return new PagedResult<EventParticipant>
+            {
+                TotalItems = totalEventParticipants.Count(),
+                CurrentPage = page,
+                PageSize = pageSize,
+                Items = eventParticipants
+            };
         }
 
         public async Task RegisterEventParticipant(RegisterEventParticipantDto registerEventParticipantDto)

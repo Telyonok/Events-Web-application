@@ -1,4 +1,5 @@
-﻿using EventsWebApp.Application.DTOs.EventParticipantDTOs;
+﻿using EventsWebApp.Application.DTOs;
+using EventsWebApp.Application.DTOs.EventParticipantDTOs;
 using EventsWebApp.Application.Interfaces;
 using EventsWebApp.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -40,6 +41,13 @@ namespace EventsWebApp.Presentation.Controllers
             var result = await _eventParticipantService.GetEventParticipantsByEventId(eventId);
             if (result == null)
                 return NotFound();
+            return Ok(result);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<PagedResult<EventParticipant>>> GetAllEventParticipantsPaged(int page, int pageSize)
+        {
+            var result = await _eventParticipantService.GetAllEventParticipantsPaged(page, pageSize);
             return Ok(result);
         }
 

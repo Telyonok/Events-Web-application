@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EventsWebApp.Application.DTOs;
 using EventsWebApp.Application.DTOs.EventDTOs;
 using EventsWebApp.Application.Exceptions;
 using EventsWebApp.Application.Filters;
@@ -46,6 +47,22 @@ namespace EventsWebApp.Application.Services
         {
             var result = await _unitOfWork.Events.GetEventsWithFilter(eventFilter);
             return result;
+        }
+
+        public async Task<PagedResult<Event>> GetAllEventsPaged(int page, int pageSize)
+        {
+            var totalEvents = await GetAllEvents();
+            var events = totalEvents
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize).ToList();
+
+            return new PagedResult<Event>
+            {
+                TotalItems = totalEvents.Count(),
+                CurrentPage = page,
+                PageSize = pageSize,
+                Items = events
+            };
         }
 
         public async Task AddEvent([FromBody] CreateEventDTO createEventDTO)

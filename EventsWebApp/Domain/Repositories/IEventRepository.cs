@@ -1,4 +1,5 @@
-﻿using EventsWebApp.Application.Filters;
+﻿using EventsWebApp.Application.DTOs;
+using EventsWebApp.Application.Filters;
 using EventsWebApp.Domain.Models;
 
 namespace EventsWebApp.Domain.Repositories

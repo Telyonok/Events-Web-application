@@ -1,4 +1,5 @@
-﻿using EventsWebApp.Application.DTOs.EventDTOs;
+﻿using EventsWebApp.Application.DTOs;
+using EventsWebApp.Application.DTOs.EventDTOs;
 using EventsWebApp.Application.Filters;
 using EventsWebApp.Domain.Models;
 
@@ -13,6 +14,7 @@ namespace EventsWebApp.Application.Interfaces
         Task<Event?> GetEventByTitle(string title);
 
         Task<IEnumerable<Event>> GetEventsWithFilter(EventFilter eventFilter);
+        Task<PagedResult<Event>> GetAllEventsPaged(int page, int pageSize);
 
         Task AddEvent(CreateEventDTO createEventDTO);
 

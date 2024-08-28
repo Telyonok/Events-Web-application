@@ -1,4 +1,5 @@
-﻿using EventsWebApp.Application.DTOs.EventDTOs;
+﻿using EventsWebApp.Application.DTOs;
+using EventsWebApp.Application.DTOs.EventDTOs;
 using EventsWebApp.Application.Filters;
 using EventsWebApp.Application.Interfaces;
 using EventsWebApp.Domain.Models;
@@ -53,9 +54,16 @@ namespace EventsWebApp.Presentation.Controllers
             return Ok(result);
         }
 
+        [HttpGet]
+        public async Task<ActionResult<PagedResult<Event>>> GetAllEventsPaged(int page, int pageSize)
+        {
+            var result = await _eventService.GetAllEventsPaged(page, pageSize);
+            return Ok(result);
+        }
+
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult> AddEvent([FromBody] CreateEventDTO createEventDTO)
+        public async Task<ActionResult> AddEvent([FromForm] CreateEventDTO createEventDTO)
         {
             await _eventService.AddEvent(createEventDTO);
             return Ok();
@@ -63,7 +71,7 @@ namespace EventsWebApp.Presentation.Controllers
 
         [HttpPut]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> UpdateEvent([FromBody] UpdateEventDTO updateEventDTO)
+        public async Task<IActionResult> UpdateEvent([FromForm] UpdateEventDTO updateEventDTO)
         {
             await _eventService.UpdateEvent(updateEventDTO);
             return Ok();

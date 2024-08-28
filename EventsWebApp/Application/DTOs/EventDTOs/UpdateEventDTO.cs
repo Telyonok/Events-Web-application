@@ -9,6 +9,6 @@
         public string Location { get; set; } = string.Empty;
         public DateTime EventDateTime { get; set; }
         public int MaxParticipants { get; set; }
-        public string Picture { get; set; } = string.Empty; // String for now.
+        public IFormFile[]? Picture { get; set; }
     }
 }
