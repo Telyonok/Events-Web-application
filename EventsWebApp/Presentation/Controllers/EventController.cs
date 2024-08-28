@@ -2,6 +2,7 @@
 using EventsWebApp.Application.Filters;
 using EventsWebApp.Application.Interfaces;
 using EventsWebApp.Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EventsWebApp.Presentation.Controllers
@@ -53,6 +54,7 @@ namespace EventsWebApp.Presentation.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> AddEvent([FromBody] CreateEventDTO createEventDTO)
         {
             await _eventService.AddEvent(createEventDTO);
@@ -60,6 +62,7 @@ namespace EventsWebApp.Presentation.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateEvent([FromBody] UpdateEventDTO updateEventDTO)
         {
             await _eventService.UpdateEvent(updateEventDTO);
@@ -67,6 +70,7 @@ namespace EventsWebApp.Presentation.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteEvent(Guid id)
         {
             await _eventService.DeleteEvent(id);

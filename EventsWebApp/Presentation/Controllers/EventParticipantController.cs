@@ -1,6 +1,7 @@
 ﻿using EventsWebApp.Application.DTOs.EventParticipantDTOs;
 using EventsWebApp.Application.Interfaces;
 using EventsWebApp.Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EventsWebApp.Presentation.Controllers
@@ -43,6 +44,7 @@ namespace EventsWebApp.Presentation.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> AddEventParticipant([FromBody] CreateEventParticipantDTO createEventParticipantDTO)
         {
             await _eventParticipantService.AddEventParticipant(createEventParticipantDTO);
@@ -50,6 +52,7 @@ namespace EventsWebApp.Presentation.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateEventParticipant([FromBody] UpdateEventParticipantDTO updateEventParticipantDTO)
         {
             await _eventParticipantService.UpdateEventParticipant(updateEventParticipantDTO);
@@ -57,6 +60,7 @@ namespace EventsWebApp.Presentation.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> RegisterEventParticipant([FromBody] RegisterEventParticipantDto registerEventParticipantDto)
         {
             await _eventParticipantService.RegisterEventParticipant(registerEventParticipantDto);
@@ -64,6 +68,7 @@ namespace EventsWebApp.Presentation.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UnRegisterEventParticipant(Guid id)
         {
             await _eventParticipantService.UnRegisterEventParticipant(id);
@@ -71,6 +76,7 @@ namespace EventsWebApp.Presentation.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteEventParticipant(Guid id)
         {
             await _eventParticipantService.DeleteEventParticipant(id);
