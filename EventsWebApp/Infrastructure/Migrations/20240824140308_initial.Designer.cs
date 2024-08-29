@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EventsWebApp.Migrations
 {
     [DbContext(typeof(EventsDbContext))]
-    [Migration("20240822110732_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20240824140308_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -39,6 +39,13 @@ namespace EventsWebApp.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("EventDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("MaxParticipants")
                         .HasColumnType("int");
 
@@ -61,11 +68,14 @@ namespace EventsWebApp.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime>("Birthdate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("EventId")
+                    b.Property<Guid>("EventId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("EventRegistrationDate")
@@ -90,7 +100,9 @@ namespace EventsWebApp.Migrations
                 {
                     b.HasOne("EventsWebApp.Domain.Models.Event", null)
                         .WithMany("EventParticipants")
-                        .HasForeignKey("EventId");
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("EventsWebApp.Domain.Models.Event", b =>
