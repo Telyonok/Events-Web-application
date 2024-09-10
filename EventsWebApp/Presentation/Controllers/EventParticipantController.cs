@@ -4,6 +4,7 @@ using EventsWebApp.Application.Interfaces;
 using EventsWebApp.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SharpGrip.FluentValidation.AutoValidation.Mvc.Attributes;
 
 namespace EventsWebApp.Presentation.Controllers
 {
@@ -77,7 +78,7 @@ namespace EventsWebApp.Presentation.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult> AddEventParticipant([FromBody] CreateEventParticipantDTO createEventParticipantDTO)
+        public async Task<ActionResult> AddEventParticipant([FromBody, AutoValidateAlways] CreateEventParticipantDTO createEventParticipantDTO)
         {
             await _addEventParticipantUseCase.ExecuteAsync(createEventParticipantDTO);
             return Ok();
@@ -85,7 +86,7 @@ namespace EventsWebApp.Presentation.Controllers
 
         [HttpPut]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> UpdateEventParticipant([FromBody] UpdateEventParticipantDTO updateEventParticipantDTO)
+        public async Task<IActionResult> UpdateEventParticipant([FromBody, AutoValidateAlways] UpdateEventParticipantDTO updateEventParticipantDTO)
         {
             await _updateEventParticipantUseCase.ExecuteAsync(updateEventParticipantDTO);
             return NoContent();
@@ -93,7 +94,7 @@ namespace EventsWebApp.Presentation.Controllers
 
         [HttpPut]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> RegisterEventParticipant([FromBody] RegisterEventParticipantDto registerEventParticipantDto)
+        public async Task<IActionResult> RegisterEventParticipant([FromBody] RegisterEventParticipantDTO registerEventParticipantDto)
         {
             await _registerEventParticipantUseCase.ExecuteAsync(registerEventParticipantDto);
             return NoContent();

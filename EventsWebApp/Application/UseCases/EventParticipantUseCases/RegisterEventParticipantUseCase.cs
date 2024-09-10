@@ -14,7 +14,7 @@ namespace EventsWebApp.Application.UseCases.EventParticipantUseCases
             _unitOfWork = unitOfWork;
         }
 
-        public async Task ExecuteAsync(RegisterEventParticipantDto registerEventParticipantDto)
+        public async Task ExecuteAsync(RegisterEventParticipantDTO registerEventParticipantDto)
         {
             var existingEvent = await _unitOfWork.Events.Find(e => e.Id == registerEventParticipantDto.EventId);
             if (!existingEvent.Any())

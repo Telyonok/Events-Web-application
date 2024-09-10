@@ -31,7 +31,7 @@ namespace EventsWebApp.Application.Interfaces
 
     public interface IRegisterEventParticipantUseCase
     {
-        Task ExecuteAsync(RegisterEventParticipantDto registerEventParticipantDto);
+        Task ExecuteAsync(RegisterEventParticipantDTO registerEventParticipantDto);
     }
 
     public interface IUnRegisterEventParticipantUseCase

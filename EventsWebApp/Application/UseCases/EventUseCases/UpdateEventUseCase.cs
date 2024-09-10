@@ -11,19 +11,16 @@ namespace EventsWebApp.Application.UseCases.EventUseCases
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly IValidator<Event> _eventValidator;
 
-        public UpdateEventUseCase(IUnitOfWork unitOfWork, IMapper mapper, IValidator<Event> eventValidator)
+        public UpdateEventUseCase(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _eventValidator = eventValidator;
         }
 
         public async Task ExecuteAsync(UpdateEventDTO updateEventDTO)
         {
             var @event = _mapper.Map<Event>(updateEventDTO);
-            _eventValidator.ValidateAndThrow(@event);
             await _unitOfWork.Events.Upsert(@event);
             await _unitOfWork.CompleteAsync();
         }

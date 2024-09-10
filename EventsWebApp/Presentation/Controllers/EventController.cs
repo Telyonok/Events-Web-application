@@ -5,6 +5,7 @@ using EventsWebApp.Application.Interfaces;
 using EventsWebApp.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SharpGrip.FluentValidation.AutoValidation.Mvc.Attributes;
 
 namespace EventsWebApp.Presentation.Controllers
 {
@@ -82,7 +83,7 @@ namespace EventsWebApp.Presentation.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult> AddEvent([FromForm] CreateEventDTO createEventDTO)
+        public async Task<ActionResult> AddEvent([FromForm, AutoValidateAlways] CreateEventDTO createEventDTO)
         {
             await _addEventUseCase.ExecuteAsync(createEventDTO);
             return Ok();
@@ -90,7 +91,7 @@ namespace EventsWebApp.Presentation.Controllers
 
         [HttpPut]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> UpdateEvent([FromForm] UpdateEventDTO updateEventDTO)
+        public async Task<IActionResult> UpdateEvent([FromForm, AutoValidateAlways] UpdateEventDTO updateEventDTO)
         {
             await _updateEventUseCase.ExecuteAsync(updateEventDTO);
             return NoContent();

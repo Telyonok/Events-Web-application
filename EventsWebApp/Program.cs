@@ -1,7 +1,5 @@
 using AuthorizationServer.Domain.Models;
 using EventsWebApp.Application.AutoMapperProfiles;
-using EventsWebApp.Application.Interfaces;
-using EventsWebApp.Application.Services;
 using EventsWebApp.Application.Validators;
 using EventsWebApp.Domain.Models;
 using EventsWebApp.Domain.Repositories;
@@ -12,6 +10,9 @@ using EventsWebApp.Presentation.Extensions;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
+using EventsWebApp.Application.DTOs.EventDTOs;
+using EventsWebApp.Application.DTOs.EventParticipantDTOs;
+using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,10 +21,14 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerConfiguration();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<IEventService, EventService>();
-builder.Services.AddScoped<IEventParticipantService, EventParticipantService>();
-builder.Services.AddScoped<IValidator<Event>, EventValidator>();
-builder.Services.AddScoped<IValidator<EventParticipant>, EventParticipantValidator>();
+
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddApplicationServices();  // UseCases.
+
+builder.Services.AddScoped<IValidator<CreateEventDTO>, CreateEventDTOValidator>();
+builder.Services.AddScoped<IValidator<UpdateEventDTO>, UpdateEventDTOValidator>();
+builder.Services.AddScoped<IValidator<CreateEventParticipantDTO>, CreateEventParticipantDTOValidator>();
+builder.Services.AddScoped<IValidator<UpdateEventParticipantDTO>, UpdateEventParticipantDTOValidator>();
 
 builder.Services.AddDbContext<EventsDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("EventsDbContext")));

@@ -1,11 +1,11 @@
-﻿using EventsWebApp.Domain.Models;
+﻿using EventsWebApp.Application.DTOs.EventDTOs;
 using FluentValidation;
 
 namespace EventsWebApp.Application.Validators
 {
-    public class EventValidator : AbstractValidator<Event>
+    public class UpdateEventDTOValidator : AbstractValidator<UpdateEventDTO>
     {
-        public EventValidator()
+        public UpdateEventDTOValidator()
         {
             RuleFor(@event =>
                 @event.Title).NotEmpty().WithMessage("Title is required.")

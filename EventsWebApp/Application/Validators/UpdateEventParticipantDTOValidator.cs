@@ -1,11 +1,12 @@
-﻿using EventsWebApp.Domain.Models;
+﻿using EventsWebApp.Application.DTOs.EventParticipantDTOs;
+using EventsWebApp.Application.Helpers;
 using FluentValidation;
 
 namespace EventsWebApp.Application.Validators
 {
-    public class EventParticipantValidator : AbstractValidator<EventParticipant>
+    public class UpdateEventParticipantDTOValidator : AbstractValidator<UpdateEventParticipantDTO>
     {
-        public EventParticipantValidator()
+        public UpdateEventParticipantDTOValidator()
         {
             RuleFor(eventParticipant =>
                 eventParticipant.Email)
@@ -18,14 +19,7 @@ namespace EventsWebApp.Application.Validators
                 eventParticipant.Lastname).NotEmpty().WithMessage("Last name is required.")
                 .MaximumLength(20).WithMessage("Last name cannot exceed 20 characters.");
             RuleFor(eventParticipant =>
-                eventParticipant.Birthdate).NotEmpty().Must(IsAValidBirthdate).WithMessage("Please enter a valid birthday.");
-        }
-
-        private bool IsAValidBirthdate(DateTime birthday)
-        {
-            var age = DateTime.Now.Year - birthday.Year;
-
-            return age < 10 || age > 120;
+                eventParticipant.Birthdate).NotEmpty().Must(DateHelpers.IsAValidBirthdate).WithMessage("Please enter a valid birthday.");
         }
     }
 }
