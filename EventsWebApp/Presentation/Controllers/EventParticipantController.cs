@@ -11,34 +11,58 @@ namespace EventsWebApp.Presentation.Controllers
     [Route("API/[controller]/[action]")]
     public class EventParticipantController : ControllerBase
     {
-        private readonly IEventParticipantService _eventParticipantService;
-        public EventParticipantController(IEventParticipantService eventParticipantService)
+        private readonly IAddEventParticipantUseCase _addEventParticipantUseCase;
+        private readonly IGetAllEventParticipantsUseCase _getAllEventParticipantsUseCase;
+        private readonly IGetEventParticipantByIdUseCase _getEventParticipantByIdUseCase;
+        private readonly IGetEventParticipantsByEventIdUseCase _getEventParticipantsByEventIdUseCase;
+        private readonly IGetAllEventParticipantsPagedUseCase _getAllEventParticipantsPagedUseCase;
+        private readonly IUpdateEventParticipantUseCase _updateEventParticipantUseCase;
+        private readonly IRegisterEventParticipantUseCase _registerEventParticipantUseCase;
+        private readonly IUnRegisterEventParticipantUseCase _unRegisterEventParticipantUseCase;
+        private readonly IDeleteEventParticipantUseCase _deleteEventParticipantUseCase;
+
+        public EventParticipantController(
+            IAddEventParticipantUseCase addEventParticipantUseCase,
+            IGetAllEventParticipantsUseCase getAllEventParticipantsUseCase,
+            IGetEventParticipantByIdUseCase getEventParticipantByIdUseCase,
+            IGetEventParticipantsByEventIdUseCase getEventParticipantsByEventIdUseCase,
+            IGetAllEventParticipantsPagedUseCase getAllEventParticipantsPagedUseCase,
+            IUpdateEventParticipantUseCase updateEventParticipantUseCase,
+            IRegisterEventParticipantUseCase registerEventParticipantUseCase,
+            IUnRegisterEventParticipantUseCase unRegisterEventParticipantUseCase,
+            IDeleteEventParticipantUseCase deleteEventParticipantUseCase)
         {
-            _eventParticipantService = eventParticipantService;
+            _addEventParticipantUseCase = addEventParticipantUseCase;
+            _getAllEventParticipantsUseCase = getAllEventParticipantsUseCase;
+            _getEventParticipantByIdUseCase = getEventParticipantByIdUseCase;
+            _getEventParticipantsByEventIdUseCase = getEventParticipantsByEventIdUseCase;
+            _getAllEventParticipantsPagedUseCase = getAllEventParticipantsPagedUseCase;
+            _updateEventParticipantUseCase = updateEventParticipantUseCase;
+            _registerEventParticipantUseCase = registerEventParticipantUseCase;
+            _unRegisterEventParticipantUseCase = unRegisterEventParticipantUseCase;
+            _deleteEventParticipantUseCase = deleteEventParticipantUseCase;
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Event>>> GetAllEventParticipants()
+        public async Task<ActionResult<List<EventParticipant>>> GetAllEventParticipants()
         {
-            var result = await _eventParticipantService.GetAllEventParticipants();
-            if (result == null)
-                return NotFound();
+            var result = await _getAllEventParticipantsUseCase.ExecuteAsync();
             return Ok(result);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Event>> GetEventParticipantById(Guid id)
+        public async Task<ActionResult<EventParticipant>> GetEventParticipantById(Guid id)
         {
-            var result = await _eventParticipantService.GetEventParticipantById(id);
+            var result = await _getEventParticipantByIdUseCase.ExecuteAsync(id);
             if (result == null)
                 return NotFound();
             return Ok(result);
         }
 
         [HttpGet("{eventId}")]
-        public async Task<ActionResult<Event>> GetEventParticipantsByEventId(Guid eventId)
+        public async Task<ActionResult<List<EventParticipant>>> GetEventParticipantsByEventId(Guid eventId)
         {
-            var result = await _eventParticipantService.GetEventParticipantsByEventId(eventId);
+            var result = await _getEventParticipantsByEventIdUseCase.ExecuteAsync(eventId);
             if (result == null)
                 return NotFound();
             return Ok(result);
@@ -47,7 +71,7 @@ namespace EventsWebApp.Presentation.Controllers
         [HttpGet]
         public async Task<ActionResult<PagedResult<EventParticipant>>> GetAllEventParticipantsPaged(int page, int pageSize)
         {
-            var result = await _eventParticipantService.GetAllEventParticipantsPaged(page, pageSize);
+            var result = await _getAllEventParticipantsPagedUseCase.ExecuteAsync(page, pageSize);
             return Ok(result);
         }
 
@@ -55,7 +79,7 @@ namespace EventsWebApp.Presentation.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult> AddEventParticipant([FromBody] CreateEventParticipantDTO createEventParticipantDTO)
         {
-            await _eventParticipantService.AddEventParticipant(createEventParticipantDTO);
+            await _addEventParticipantUseCase.ExecuteAsync(createEventParticipantDTO);
             return Ok();
         }
 
@@ -63,32 +87,32 @@ namespace EventsWebApp.Presentation.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateEventParticipant([FromBody] UpdateEventParticipantDTO updateEventParticipantDTO)
         {
-            await _eventParticipantService.UpdateEventParticipant(updateEventParticipantDTO);
-            return Ok();
+            await _updateEventParticipantUseCase.ExecuteAsync(updateEventParticipantDTO);
+            return NoContent();
         }
 
         [HttpPut]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> RegisterEventParticipant([FromBody] RegisterEventParticipantDto registerEventParticipantDto)
         {
-            await _eventParticipantService.RegisterEventParticipant(registerEventParticipantDto);
-            return Ok();
+            await _registerEventParticipantUseCase.ExecuteAsync(registerEventParticipantDto);
+            return NoContent();
         }
 
-        [HttpPut]
+        [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UnRegisterEventParticipant(Guid id)
         {
-            await _eventParticipantService.UnRegisterEventParticipant(id);
-            return Ok();
+            await _unRegisterEventParticipantUseCase.ExecuteAsync(id);
+            return NoContent();
         }
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteEventParticipant(Guid id)
         {
-            await _eventParticipantService.DeleteEventParticipant(id);
-            return Ok();
+            await _deleteEventParticipantUseCase.ExecuteAsync(id);
+            return NoContent();
         }
     }
 }
