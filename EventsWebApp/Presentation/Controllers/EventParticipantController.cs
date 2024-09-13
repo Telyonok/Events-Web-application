@@ -55,8 +55,6 @@ namespace EventsWebApp.Presentation.Controllers
         public async Task<ActionResult<EventParticipant>> GetEventParticipantById(Guid id)
         {
             var result = await _getEventParticipantByIdUseCase.ExecuteAsync(id);
-            if (result == null)
-                return NotFound();
             return Ok(result);
         }
 
@@ -64,8 +62,6 @@ namespace EventsWebApp.Presentation.Controllers
         public async Task<ActionResult<List<EventParticipant>>> GetEventParticipantsByEventId(Guid eventId)
         {
             var result = await _getEventParticipantsByEventIdUseCase.ExecuteAsync(eventId);
-            if (result == null)
-                return NotFound();
             return Ok(result);
         }
 
