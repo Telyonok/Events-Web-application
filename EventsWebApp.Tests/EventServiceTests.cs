@@ -1,43 +1,65 @@
 using AutoMapper;
 using EventsWebApp.Application.DTOs.EventDTOs;
-using EventsWebApp.Application.DTOs.EventParticipantDTOs;
 using EventsWebApp.Application.Exceptions;
 using EventsWebApp.Application.Interfaces;
-using EventsWebApp.Application.Services;
+using EventsWebApp.Application.UseCases.EventUseCases;
 using EventsWebApp.Domain.Models;
 using EventsWebApp.Domain.Repositories;
 using FluentValidation;
 using FluentValidation.Results;
 using Moq;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace EventsWebApp.Tests
 {
-    public class EventServiceTests
+    public class EventUseCaseTests
     {
         private readonly Mock<IUnitOfWork> _mockUnitOfWork;
         private readonly Mock<IMapper> _mockMapper;
         private readonly Mock<IValidator<Event>> _mockValidator;
-        private readonly EventService _eventService;
+        private readonly IAddEventUseCase _addEventUseCase;
+        private readonly IGetAllEventsUseCase _getAllEventsUseCase;
+        private readonly IGetEventByIdUseCase _getEventByIdUseCase;
+        private readonly IGetEventByTitleUseCase _getEventByTitleUseCase;
+        private readonly IGetEventsWithFilterUseCase _getEventsWithFilterUseCase;
+        private readonly IGetAllEventsPagedUseCase _getAllEventsPagedUseCase;
+        private readonly IUpdateEventUseCase _updateEventUseCase;
+        private readonly IDeleteEventUseCase _deleteEventUseCase;
 
-        public EventServiceTests()
+        public EventUseCaseTests()
         {
-            _mockUnitOfWork = new Mock<IUnitOfWork>();
             _mockUnitOfWork = new Mock<IUnitOfWork>();
             _mockMapper = new Mock<IMapper>();
             _mockValidator = new Mock<IValidator<Event>>();
-            _eventService = new EventService(_mockUnitOfWork.Object, _mockMapper.Object, _mockValidator.Object);
+
+            // Initialize use cases
+            _addEventUseCase = new AddEventUseCase(_mockUnitOfWork.Object, _mockMapper.Object);
+            _getAllEventsUseCase = new GetAllEventsUseCase(_mockUnitOfWork.Object);
+            _getEventByIdUseCase = new GetEventByIdUseCase(_mockUnitOfWork.Object);
+            _getEventByTitleUseCase = new GetEventByTitleUseCase(_mockUnitOfWork.Object);
+            _getEventsWithFilterUseCase = new GetEventsWithFilterUseCase(_mockUnitOfWork.Object);
+            _getAllEventsPagedUseCase = new GetAllEventsPagedUseCase(_mockUnitOfWork.Object);
+            _updateEventUseCase = new UpdateEventUseCase(_mockUnitOfWork.Object, _mockMapper.Object);
+            _deleteEventUseCase = new DeleteEventUseCase(_mockUnitOfWork.Object);
         }
 
         [Fact]
         public async Task GetAllEvents_ReturnsAllEvents()
         {
             // Arrange
-            var events = new List<Event> { new Event { Id = Guid.NewGuid(), Title = "Event1" }, new Event { Id = Guid.NewGuid(), Title = "Event2" } };
+            var events = new List<Event>
+            {
+                new Event { Id = Guid.NewGuid(), Title = "Event1" },
+                new Event { Id = Guid.NewGuid(), Title = "Event2" }
+            };
             _mockUnitOfWork.Setup(uow => uow.Events.All()).ReturnsAsync(events);
 
             // Act
-            var result = await _eventService.GetAllEvents();
+            var result = await _getAllEventsUseCase.ExecuteAsync();
 
             // Assert
             Assert.Equal(2, result.Count());
@@ -53,7 +75,7 @@ namespace EventsWebApp.Tests
             _mockUnitOfWork.Setup(uow => uow.Events.GetById(id)).ReturnsAsync(eventToReturn);
 
             // Act
-            var result = await _eventService.GetEventById(id);
+            var result = await _getEventByIdUseCase.ExecuteAsync(id);
 
             // Assert
             Assert.NotNull(result);
@@ -70,7 +92,7 @@ namespace EventsWebApp.Tests
                 .ReturnsAsync(eventToReturn);
 
             // Act
-            var result = await _eventService.GetEventByTitle(title);
+            var result = await _getEventByTitleUseCase.ExecuteAsync(title);
 
             // Assert
             Assert.NotNull(result);
@@ -89,7 +111,7 @@ namespace EventsWebApp.Tests
             _mockUnitOfWork.Setup(uow => uow.Events.All()).ReturnsAsync(events);
 
             // Act
-            var result = await _eventService.GetAllEventsPaged(1, 1);
+            var result = await _getAllEventsPagedUseCase.ExecuteAsync(1, 1);
 
             // Assert
             Assert.Equal(2, result.TotalItems);
@@ -107,7 +129,7 @@ namespace EventsWebApp.Tests
             _mockValidator.Setup(v => v.Validate(It.IsAny<Event>())).Returns(new ValidationResult());
 
             // Act
-            await _eventService.AddEvent(createEventDTO);
+            await _addEventUseCase.ExecuteAsync(createEventDTO);
 
             // Assert
             _mockUnitOfWork.Verify(uow => uow.Events.Add(eventToAdd), Times.Once);
@@ -122,7 +144,7 @@ namespace EventsWebApp.Tests
             _mockUnitOfWork.Setup(uow => uow.Events.Delete(id)).ReturnsAsync(true);
 
             // Act
-            await _eventService.DeleteEvent(id);
+            await _deleteEventUseCase.ExecuteAsync(id);
 
             // Assert
             _mockUnitOfWork.Verify(uow => uow.Events.Delete(id), Times.Once);
@@ -137,22 +159,22 @@ namespace EventsWebApp.Tests
             _mockUnitOfWork.Setup(uow => uow.Events.Delete(id)).ReturnsAsync(false);
 
             // Act & Assert
-            await Assert.ThrowsAsync<NotFoundException>(() => _eventService.DeleteEvent(id));
+            await Assert.ThrowsAsync<NotFoundException>(() => _deleteEventUseCase.ExecuteAsync(id));
         }
 
         [Fact]
-        public async Task UpdateEventParticipant_ShouldUpdateAndComplete()
+        public async Task UpdateEvent_ShouldUpdateAndComplete()
         {
             // Arrange
-            var updateDto = new UpdateEventDTO { Id = Guid.NewGuid(), Title = "New Event" };
-            var @event = new Event { Id = updateDto.Id, Title = "New Event" };
+            var updateDto = new UpdateEventDTO { Id = Guid.NewGuid(), Title = "Updated Event" };
+            var @event = new Event { Id = updateDto.Id, Title = "Updated Event" };
 
             _mockMapper.Setup(m => m.Map<Event>(updateDto)).Returns(@event);
             _mockValidator.Setup(v => v.Validate(It.IsAny<Event>())).Returns(new ValidationResult());
-            _mockUnitOfWork.Setup(uow => uow.Events.Add(@event));
+            _mockUnitOfWork.Setup(uow => uow.Events.Upsert(@event));
 
             // Act
-            await _eventService.UpdateEvent(updateDto);
+            await _updateEventUseCase.ExecuteAsync(updateDto);
 
             // Assert
             _mockUnitOfWork.Verify(uow => uow.Events.Upsert(@event), Times.Once);
