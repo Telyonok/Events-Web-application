@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace EventsWebApp.Infrastructure.Repositories
 {
-    public class GenericRepository<T> : IGenericRepository<T> where T : class
+    public abstract class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         protected EventsDbContext context;
         internal DbSet<T> dbSet;
@@ -31,24 +31,15 @@ namespace EventsWebApp.Infrastructure.Repositories
             return true;
         }
 
-        public virtual Task<bool> Delete(Guid id)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract Task<bool> Delete(Guid id);
 
-        public virtual Task<IEnumerable<T>> All()
-        {
-            throw new NotImplementedException();
-        }
+        public abstract Task<IEnumerable<T>> All();
 
         public async Task<IEnumerable<T>> Find(Expression<Func<T, bool>> predicate)
         {
             return await dbSet.Where(predicate).ToListAsync();
         }
 
-        public virtual Task<bool> Upsert(T entity)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract Task<bool> Upsert(T entity);
     }
 }
